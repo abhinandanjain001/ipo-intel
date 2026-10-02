@@ -39,4 +39,15 @@ Dedicated Firebase project: `ipo-intel-9c07f` (Spark plan). Web app: IPO Intel W
 
 The public Firebase web configuration lives in `public/firebase-config.js`; it is not an Admin SDK credential. No service account key is required. Configure providers and authorized domains in Firebase Authentication. The production domain is `ipo-intel-six.vercel.app`.
 
-The dashboard and public market-data API remain public. Sign-in establishes account identity; it does not impose server authorization on the public IPO endpoint. Add verified Firebase ID-token checks on the server if private user data or protected endpoints are added later. No private user database is enabled.
+The dashboard and public market-data API remain public. Sign-in establishes account identity; it does not impose server authorization on the public IPO endpoint. Personal holdings use Firestore rules tied to the signed-in user’s UID; the public IPO API never handles portfolio data.
+
+
+## Personal portfolio and research details
+
+The dashboard displays offer size, opening/closing/listing dates, lot cost, source reading time and subscription demand when supplied by the feed. Missing values remain explicit. Benefits and a research checklist explain how to use the tools.
+
+Signed-in users can add, edit, remove and export holdings. Firestore stores each holding under `users/{uid}/holdings/{holdingId}`. Deploy `firestore.rules` to the default database: users can access only their own path, and writes validate the schema and numeric bounds. Other paths are denied.
+
+Portfolio marks are manually entered valuations or sale prices, not live stock quotes. Open cost includes fees; unrealized totals include only held positions with entered valuations. Sold positions contribute to realized profit/loss. Split partially sold positions into separate held and sold records. CSV exports neutralize leading spreadsheet formula characters.
+
+Run `npm test` for profit/loss, missing valuation, input validation and CSV checks. No broker connection or order execution is provided.
