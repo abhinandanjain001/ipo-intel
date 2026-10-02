@@ -9,6 +9,7 @@ function render(){
  $('empty').hidden=filtered.length>0;if(!filtered.length)$('empty').textContent=items.length?'No IPOs match these filters.':'No live IPO data available. Retry, or use the calculator with your own assumptions.';
 }
 function choose(id,update=true){const i=items.find(x=>x.id===id);if(!i)return;selected=id;if(update)edited=false;$('selected-name').textContent=i.name;$('selected-meta').textContent=`${i.board} · ${i.status} · listing ${i.listing||'not announced'} · reading ${i.updatedLabel||'unknown'} IST`;
+ $('ipo-details').innerHTML=`<dl><div><dt>Issue size</dt><dd>${escape(i.size||'Not supplied')}</dd></div><div><dt>Opens / closes</dt><dd>${escape(i.open||'Not supplied')} / ${escape(i.close||'Not supplied')}</dd></div><div><dt>Expected listing</dt><dd>${escape(i.listing||'Not announced')}</dd></div><div><dt>One lot at issue price</dt><dd>${i.price>0&&i.lot>0?money(i.price*i.lot):'Not supplied'}</dd></div><div><dt>Reported subscription</dt><dd>${i.subscription===null?'Not supplied':escape(i.subscription)+'×'}</dd></div><div><dt>Source reading</dt><dd>${escape(i.updatedLabel||'Unknown')} IST</dd></div></dl>`;
  if(update){$('price').value=i.price??'';$('lot').value=i.lot??'';$('gmp').value=i.gmp??'';}
  const a=$('source-link');try{const u=new URL(i.source);a.hidden=!['www.investorgain.com','www.ipoguru.in','ipoguru.in'].includes(u.hostname)||u.protocol!=='https:';if(!a.hidden)a.href=u.href;}catch{a.hidden=true;}render();calculate();}
 function calculate(){
