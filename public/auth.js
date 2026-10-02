@@ -1,4 +1,4 @@
-import {firebaseConfig} from './firebase-config.js';
+import {firebaseReady} from './firebase-client.js';
 const $=id=>document.getElementById(id);
 let auth,sdk,mode='signin',busy=false;
 const messages={
@@ -35,9 +35,9 @@ $('auth-form').addEventListener('submit',async e=>{
 });
 $('auth-signout').addEventListener('click',async()=>{if(!auth)return;$('auth-signout').disabled=true;try{await sdk.signOut(auth);$('account-feedback').textContent='You have signed out.';}catch{$('account-feedback').textContent='Sign-out failed. Please retry.';}finally{$('auth-signout').disabled=false;}});
 async function initialize(){
- try{const [app,authSdk]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js')]);sdk=authSdk;auth=sdk.getAuth(app.initializeApp(firebaseConfig));
+ try{const client=await firebaseReady;sdk=client.authSdk;auth=client.auth;
   await sdk.setPersistence(auth,sdk.browserLocalPersistence);
-  sdk.onAuthStateChanged(auth,user=>{$('auth-open').hidden=!!user;$('account-user').hidden=!user;$('auth-signout').hidden=!user;$('account-user').textContent=user?.email||'Your account';$('auth-open').disabled=false;$('auth-open').textContent='Sign in';},()=>{$('account-feedback').textContent='Unable to restore your session. Please reload.';});
+  sdk.onAuthStateChanged(auth,user=>{$('account-feedback').textContent='';$('auth-open').hidden=!!user;$('account-user').hidden=!user;$('auth-signout').hidden=!user;$('account-user').textContent=user?.email||'Your account';$('auth-open').disabled=false;$('auth-open').textContent='Sign in';},()=>{$('account-feedback').textContent='Unable to restore your session. Please reload.';});
  }catch{$('auth-open').disabled=false;$('auth-open').textContent='Sign in';$('auth-submit').disabled=true;$('auth-open').addEventListener('click',()=>feedback('Sign-in is temporarily unavailable. Please reload and try again.',true));}
 }
 initialize();
