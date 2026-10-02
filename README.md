@@ -32,3 +32,11 @@ Official verification: https://www.nseindia.com/market-data/all-upcoming-issues-
 - `model.test.js`: financial arithmetic and missing-value checks.
 
 The page uses source data only as escaped text. Source links are limited to provider hostnames. There is no trading or brokerage integration.
+
+## Firebase Authentication
+
+Dedicated Firebase project: `ipo-intel-9c07f` (Spark plan). Web app: IPO Intel Web. Email/password account creation, sign-in, password reset and sign-out use the Firebase modular SDK 12.19.0 from the official CDN. Sessions persist through Firebase's browser persistence. No password is stored by application code or sent to the IPO API.
+
+The public Firebase web configuration lives in `public/firebase-config.js`; it is not an Admin SDK credential. No service account key is required. Configure providers and authorized domains in Firebase Authentication. The production domain is `ipo-intel-six.vercel.app`.
+
+The dashboard and public market-data API remain public. Sign-in establishes account identity; it does not impose server authorization on the public IPO endpoint. Add verified Firebase ID-token checks on the server if private user data or protected endpoints are added later. No private user database is enabled.
