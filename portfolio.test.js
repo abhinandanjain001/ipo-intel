@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {validateHolding,holdingMetrics,portfolioTotals,csvCell} from './public/portfolio-model.js';
+const base={name:'Example IPO',quantity:100,entry:10,mark:12,fees:20,status:'Held',date:'2026-10-03',note:''};
+test('holding valuation subtracts costs and differentiates held and sold',()=>{const h=validateHolding(base);assert.equal(holdingMetrics(h).profit,180);const total=portfolioTotals([h,{...h,status:'Sold',mark:8}]);assert.equal(total.openCost,1020);assert.equal(total.openValue,1200);assert.equal(total.unrealized,180);assert.equal(total.realized,-220);});
+test('missing valuation is excluded; actual zero remains a full loss',()=>{const h=validateHolding({...base,mark:''});assert.equal(holdingMetrics(h).profit,null);const t=portfolioTotals([h]);assert.equal(t.unpriced,1);assert.equal(t.valued,0);assert.equal(holdingMetrics({...h,mark:0}).profit,-1020);});
+test('reject fractional shares, missing sold price, invalid dates and negative costs',()=>{for(const patch of [{quantity:1.5},{status:'Sold',mark:''},{date:'2026-02-30'},{fees:-1}])assert.throws(()=>validateHolding({...base,...patch}));});
+test('CSV prevents spreadsheet formula injection and escapes quotes',()=>{assert.equal(csvCell('=1+1'),'"\'=1+1"');assert.equal(csvCell('A"B'),'"A""B"');});
